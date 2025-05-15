@@ -1,0 +1,151 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f6f9;
+  color: #333;
+  margin: 0;
+}
+
+.custom-header {
+  background: linear-gradient(90deg, #007bff, #0056b3);
+}
+
+.footer {
+  background-color: #343a40;
+  color: white;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+  transition: color 0.3s;
+}
+
+.feature-card {
+  border-radius: 15px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.feature-card:hover {
+  transform: scale(1.05);
+}
+
+.animated-btn {
+  transition: all 0.3s ease;
+  border-radius: 30px;
+}
+
+.animated-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.animated-fade {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+table th, table td {
+  vertical-align: middle;
+}
+
+@media (max-width: 767px) {
+  .custom-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .feature-card {
+    margin-bottom: 1rem;
+  }
+}
+
+.modal.fade .modal-dialog {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.modal.fade.show .modal-dialog {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.modal-header {
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  color: white;
+  font-weight: 700;
+  border-bottom: none;
+}
+
+.btn-close {
+  filter: invert(1);
+  opacity: 0.8;
+}
+.btn-close:hover {
+  opacity: 1;
+}
+
+.modal-body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.law-list li {
+  margin-bottom: 0.5rem;
+  padding-left: 1.2rem;
+  position: relative;
+}
+.law-list li::before {
+  content: "\f06a";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #007bff;
+}
+
+.animated-fade {
+  animation: fadeIn 1s ease-in-out;
+}
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+.btn-upload {
+  background-color: #0d6efd;
+  color: white;
+  border-radius: 0.375rem;
+  transition: background-color 0.3s ease;
+}
+.btn-upload:hover {
+  background-color: #084298;
+  color: white;
+}
+
+.btn-download {
+  background-color: #198754;
+  color: white;
+  border-radius: 0.375rem;
+  transition: background-color 0.3s ease;
+}
+.btn-download:hover {
+  background-color: #0f5132;
+  color: white;
+}
+
+.table-responsive {
+  max-height: 220px;
+  overflow-y: auto;
+}
