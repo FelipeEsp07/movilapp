@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Visualizar Multas</title>
+  <title>Comparendos</title>
 
   <link rel="stylesheet" href="styles.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -13,8 +13,8 @@
 <body class="d-flex flex-column min-vh-100">
 
   <header class="custom-header text-white text-center py-4 shadow">
-    <h1 class="display-5 fw-bold">Visualizar <span class="text-warning">Multas</span></h1>
-    <p class="lead">Consulta tus infracciones registradas</p>
+    <h1 class="display-5 fw-bold">Mis <span class="text-warning">Comparendos</span></h1>
+    <p class="lead">Consulta tus infracciones de tránsito</p>
     <nav>
       <ul class="nav justify-content-center mt-3">
         <li class="nav-item"><a class="nav-link text-white fw-bold" href="index.html">Inicio</a></li>
@@ -27,51 +27,49 @@
   </header>
 
   <main class="container my-5 flex-grow-1">
-    <div class="text-center mb-4">
-      <h2 class="fw-bold text-primary"><i class="fas fa-ticket-alt me-2"></i>Multas Actuales</h2>
-      <p class="text-muted">Aquí puedes revisar el detalle de tus infracciones activas.</p>
+
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+      <div>
+        <h2 class="fw-bold text-primary mb-1"><i class="fas fa-ticket-alt me-2"></i>Comparendos registrados</h2>
+        <p class="text-muted mb-0">Consulta cuánto puedes ahorrar si pagas dentro del plazo de descuento.</p>
+      </div>
+      <div class="dropdown">
+        <button class="btn btn-outline-primary position-relative" type="button" id="btnNotificaciones" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-bell"></i> Notificaciones
+          <span id="badgeNotificaciones" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end p-0 shadow" style="width: 340px;" aria-labelledby="btnNotificaciones">
+          <div class="p-2 border-bottom fw-bold text-primary">Notificaciones</div>
+          <ul id="listaNotificaciones" class="list-unstyled mb-0" style="max-height: 280px; overflow-y:auto;"></ul>
+          <div id="sinNotificaciones" class="p-3 text-muted text-center small">No tienes notificaciones.</div>
+        </div>
+      </div>
     </div>
 
-    <div class="table-responsive shadow rounded bg-white p-4">
+    <!-- Toast de notificaciones automáticas -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+      <div id="toastNotificacion" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body" id="toastNotificacionMensaje"></div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive shadow rounded bg-white p-4" style="max-height:none;">
       <table class="table table-striped table-hover align-middle">
         <thead class="table-dark">
           <tr>
             <th scope="col">Descripción</th>
-            <th scope="col">Fecha</th>
-            <th scope="col">Monto</th>
+            <th scope="col">Fecha imposición</th>
             <th scope="col">Ciudad</th>
+            <th scope="col">Valor total</th>
+            <th scope="col">Estado del descuento</th>
             <th scope="col" class="text-center">Acciones</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>Exceso de velocidad</td>
-            <td>2025-04-20</td>
-            <td>$150.000</td>
-            <td>Facatativá</td>
-            <td class="text-center">
-              <button class="btn btn-sm btn-warning text-white animated-btn me-2" data-bs-toggle="modal" data-bs-target="#detalleModal" data-multa="1">
-                <i class="fas fa-eye me-1"></i>Ver Detalles
-              </button>
-              <button class="btn btn-sm btn-success text-white animated-btn" data-multa="1" onclick="pagarMulta(this)">
-                <i class="fas fa-credit-card me-1"></i>Pagar Multa
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>Parqueo en zona prohibida</td>
-            <td>2025-03-15</td>
-            <td>$120.000</td>
-            <td>Madrid</td>
-            <td class="text-center">
-              <button class="btn btn-sm btn-warning text-white animated-btn me-2" data-bs-toggle="modal" data-bs-target="#detalleModal" data-multa="2">
-                <i class="fas fa-eye me-1"></i>Ver Detalles
-              </button>
-              <button class="btn btn-sm btn-success text-white animated-btn" data-multa="2" onclick="pagarMulta(this)">
-                <i class="fas fa-credit-card me-1"></i>Pagar Multa
-              </button>
-            </td>
-          </tr>
+        <tbody id="cuerpoTablaComparendos">
+          <!-- Filas generadas dinámicamente por fn.js -->
         </tbody>
       </table>
     </div>
@@ -81,23 +79,68 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content shadow-lg">
         <div class="modal-header">
-          <h5 class="modal-title" id="detalleModalLabel">Detalle de la Multa</h5>
+          <h5 class="modal-title" id="detalleModalLabel">Comparativo de pago</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
           <h4 id="multaDescripcion" class="fw-bold text-primary mb-3"></h4>
           <ul class="list-unstyled mb-3">
-            <li><strong>Fecha:</strong> <span id="multaFecha"></span></li>
-            <li><strong>Monto:</strong> <span id="multaMonto"></span></li>
+            <li><strong>Fecha de imposición:</strong> <span id="multaFecha"></span></li>
             <li><strong>Ciudad:</strong> <span id="multaCiudad"></span></li>
+            <li><strong>Valor total:</strong> <span id="multaValorTotal"></span></li>
           </ul>
-          <h5>Leyes infringidas:</h5>
-          <ul class="law-list mb-3" id="multaLeyes"></ul>
-          <h5>Descripción detallada:</h5>
-          <p id="multaDetalle"></p>
+
+          <div class="alert" id="alertaEstado" role="alert"></div>
+
+          <h5 class="fw-bold text-primary">Comparativo de escenarios</h5>
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <div class="card h-100 border-success" id="cardDescuento50">
+                <div class="card-body text-center">
+                  <h6 class="text-success fw-bold">50% de descuento</h6>
+                  <p class="fs-4 fw-bold mb-1" id="valorDescuento50"></p>
+                  <p class="small text-muted mb-1">Ahorras <span id="ahorroDescuento50"></span></p>
+                  <p class="small mb-0" id="plazoDescuento50"></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card h-100 border-warning" id="cardDescuento25">
+                <div class="card-body text-center">
+                  <h6 class="text-warning fw-bold">25% de descuento</h6>
+                  <p class="fs-4 fw-bold mb-1" id="valorDescuento25"></p>
+                  <p class="small text-muted mb-1">Ahorras <span id="ahorroDescuento25"></span></p>
+                  <p class="small mb-0" id="plazoDescuento25"></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card h-100 border-danger" id="cardValorTotal">
+                <div class="card-body text-center">
+                  <h6 class="text-danger fw-bold">Valor total</h6>
+                  <p class="fs-4 fw-bold mb-1" id="valorTotalPago"></p>
+                  <p class="small text-muted mb-1">Pierdes <span id="perdidaValorTotal"></span> frente al 50%</p>
+                  <p class="small mb-0">Aplica al vencer ambas ventanas</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="seccionLeyes">
+            <h5>Leyes infringidas:</h5>
+            <ul class="law-list mb-3" id="multaLeyes"></ul>
+          </div>
+
+          <p class="small text-muted mb-0">
+            <i class="fas fa-shield-alt me-1"></i>
+            El pago se realiza directamente en el canal oficial del organismo de tránsito o el SIMIT — MovilApp no solicita ni almacena información financiera, conforme al artículo 136 de la Ley 769 de 2002 y a la Ley 1386 de 2010.
+          </p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary animated-btn" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-success animated-btn" id="btnPagarModal">
+            <i class="fas fa-credit-card me-1"></i>Pagar en canal oficial
+          </button>
         </div>
       </div>
     </div>
@@ -110,14 +153,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="fn.js"></script>
-  <script src="modal-multas.js"></script>
-
-  <script>
-    function pagarMulta(button) {
-      const multaId = button.getAttribute('data-multa');
-      alert('Iniciar proceso de pago para la multa ID: ' + multaId);
-    }
-  </script>
 
 </body>
 </html>
